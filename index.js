@@ -1,30 +1,20 @@
+// make .env-file accessible
 const dotenv = require("dotenv").config();
+// require modules
 const express = require("express");
-
+const http = require("http");
+const createWebSocketServer = require("./createWebSocketServer.js");
+// instantiate express app and pass json middleware
 const app = express();
-
 app.use(express.json());
+// create http-server and pass express-app to it
+const server = http.createServer(app);
+// create webSocketServer and attach it to http server
+createWebSocketServer(server);
 
-app.get("/test", (req, res) => {
-  // set headers
-  res.header({
-    'Content-Type': 'application/json',
-    'Custom-Header-One': 'VALUE_ONE',
-    'Secure-Response-Header': 'ds983ho09jc3823h-dsj9293doh'
-  });
-  // set cookie
-  const cookieString = JSON.stringify({
-    username: "Max",
-    email: "max@mail.de",
-    colorTheme: "dark"
-  });
-  res.cookie('userData', cookieString);
-  // send status and response
-  res.status(200).json({
-    msg: "What a beautiful response"
-  });
-});
-
+// get port from environment variable
 const PORT = process.env.PORT;
-
-app.listen(PORT, () => console.log(`Express server listening in port ${ PORT }`));
+// setup http-server
+server.listen(PORT, () => {
+  console.log(`Listenng on port ${ PORT }`);
+});
